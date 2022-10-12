@@ -37,8 +37,6 @@ processResources {
 
     filesMatching("META-INF/mods.toml") {
         expand "version": project.version
-        expand "forge-version-range": project.forge_version_range
-        expand "minecraft-version-range": project.minecraft_version_range
     }
 }
 
