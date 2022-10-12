@@ -92,7 +92,7 @@ public class CameraEvents {
         double dx = mouseDX * getSensitivity() * 0.15D;
         double dy = mouseDY * getSensitivity() * 0.15D;
         yaw = (float) dx - prevYaw + originalYaw;
-        if (getMinecraft().options.invertYMouse().get()) {
+        if (getMinecraft().options.invertYMouse) {
             pitch = (float) dy + prevPitch + originalPitch;
         } else {
             pitch = (float) dy - prevPitch + originalPitch;
@@ -165,7 +165,7 @@ public class CameraEvents {
     }
 
     private static double getSensitivity() {
-        return Math.pow(getMinecraft().options.sensitivity().get() * 0.6D + 0.2D, 3.0D) * 8.0D; // some magic number based on MC code
+        return Math.pow(getMinecraft().options.sensitivity * 0.6D + 0.2D, 3.0D) * 8.0D; // some magic number based on MC code
     }
 
     private static LocalPlayer getPlayer() {
