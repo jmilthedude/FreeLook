@@ -1,74 +1,57 @@
 plugins {
-    id "com.github.johnrengelman.shadow" version "7.0.0"
+    id 'fabric-loom' version '1.5-SNAPSHOT'
 }
 
-architectury {
-    platformSetupLoomIde()
-    fabric()
+base {
+    archivesName = project.archives_base_name + "-fabric-" + project.minecraft_version
 }
 
-archivesBaseName = rootProject.archivesBaseName + "-fabric"
-
-configurations {
-    common
-    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
-    compileClasspath.extendsFrom common
-    runtimeClasspath.extendsFrom common
-    developmentFabric.extendsFrom common
+repositories {
 }
 
 dependencies {
-    modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings loom.officialMojangMappings()
+    modImplementation "net.fabricmc:fabric-loader:${project.fabric_loader_version}"
 
-    common(project(path: ":common", configuration: "namedElements")) { transitive false }
-    shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+
+    implementation project(":common")
+}
+
+loom {
+    runs {
+        client {
+            startFirstThread();
+            environment("client");
+            defaultMainClass(net.fabricmc.loom.util.Constants.Knot.KNOT_CLIENT);
+            runDir = "run"
+            name = "FreeLook-Client"
+            ideConfigGenerated = true
+            source = sourceSets.main
+        }
+    }
 }
 
 processResources {
     inputs.property "version", project.version
+    inputs.property "minecraft_version", project.minecraft_version
+    inputs.property "loader_version", project.fabric_loader_version
+    filteringCharset "UTF-8"
 
     filesMatching("fabric.mod.json") {
-        expand "version": project.version
+        expand "version": project.version,
+                "minecraft_version": project.minecraft_version,
+                "loader_version": project.fabric_loader_version
     }
-}
-
-shadowJar {
-    configurations = [project.configurations.shadowCommon]
-    classifier "dev-shadow"
-}
-
-remapJar {
-    input.set shadowJar.archiveFile
-    dependsOn shadowJar
-    classifier null
 }
 
 jar {
-    classifier "dev"
-}
-
-sourcesJar {
-    def commonSources = project(":common").sourcesJar
-    dependsOn commonSources
-    from commonSources.archiveFile.map { zipTree(it) }
-}
-
-components.java {
-    withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
-        skip()
+    from("LICENSE") {
+        rename { "${it}_${project.archivesBaseName}"}
     }
 }
 
-publishing {
-    publications {
-        mavenFabric(MavenPublication) {
-            artifactId = rootProject.archives_base_name + "-" + project.name
-            from components.java
-        }
-    }
-
-    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
-    repositories {
-        // Add repositories to publish to here.
-    }
+tasks.withType(JavaCompile).configureEach {
+    source(project(':common').sourceSets.main.allSource)
 }

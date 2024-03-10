@@ -3,30 +3,24 @@
   "id": "freelook",
   "version": "${version}",
   "name": "FreeLook",
-  "description": "FPS Style FreeLook!",
-  "authors": [
-    "jmilthedude"
-  ],
+  "description": "",
+  "authors": [],
   "contact": {
-    "homepage": "https://ninjadev.net/",
-    "sources": "https://github.com/jmilthedude/FreeLook"
+    "repo": "https://github.com/jmilthedude/FreeLook"
   },
   "license": "MIT",
   "environment": "client",
   "entrypoints": {
     "main": [
-      "net.ninjadev.freelook.fabric.FreeLookFabric"
-    ],
-    "client": [
-      "net.ninjadev.freelook.fabric.FreeLookClient"
+      "net.ninjadev.freelook.FreeLookFabric"
     ]
   },
   "mixins": [
-    "freelook-common.mixins.json"
+    "freelook.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.14.9",
-    "minecraft": "1.19.2",
-    "java": ">=17"
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
   }
 }
