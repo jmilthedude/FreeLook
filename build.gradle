@@ -14,17 +14,6 @@ subprojects {
     if (name != 'forge') {
         apply plugin: 'fabric-loom'
     }
-    if (name != 'common') {
-        sourceSets {
-            main {
-                resources {
-                    srcDirs += [
-                            project(':common').sourceSets.main.resources
-                    ]
-                }
-            }
-        }
-    }
 
     def targetJavaVersion = 17
     tasks.withType(JavaCompile).configureEach {
