@@ -1,0 +1,18 @@
+{
+  "required": true,
+  "package": "net.ninjadev.freelook.mixin",
+  "compatibilityLevel": "JAVA_16",
+  "client": [
+    "CameraMixin",
+    "CameraAccessor",
+    "KeyMappingMixin",
+    "MinecraftMixin",
+    "OptionsMixin"
+  ],
+  "refmap": "FreeLook-common-refmap.json",
+  "mixins": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

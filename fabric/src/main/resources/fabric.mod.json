@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "id": "freelook",
+  "version": "${version}",
+  "name": "FreeLook",
+  "description": "FPS Style FreeLook!",
+  "authors": [
+    "jmilthedude"
+  ],
+  "contact": {
+    "homepage": "https://ninjadev.net/",
+    "sources": "https://github.com/jmilthedude/FreeLook"
+  },
+  "license": "MIT",
+  "environment": "client",
+  "entrypoints": {
+    "main": [
+      "net.ninjadev.freelook.fabric.FreeLookFabric"
+    ],
+    "client": [
+      "net.ninjadev.freelook.fabric.FreeLookClient"
+    ]
+  },
+  "mixins": [
+    {
+      "config": "freelook-common.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=0.15.7",
+    "minecraft": "1.20.4",
+    "java": ">=17"
+  }
+}

@@ -1,0 +1,55 @@
+plugins {
+    id "architectury-plugin" version "3.4-SNAPSHOT"
+    id "dev.architectury.loom" version "1.5-SNAPSHOT" apply false
+}
+
+
+architectury {
+    minecraft = rootProject.minecraft_version
+}
+
+tasks.register('copyJars', Copy) {
+    from '/fabric/build/libs'
+    from '/forge/build/libs'
+    into '/build/libs'
+    exclude("*-dev-shadow.jar")
+    exclude("*-sources.jar")
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
+
+subprojects {
+    apply plugin: "dev.architectury.loom"
+
+    dependencies {
+        minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
+        mappings "net.fabricmc:yarn:${rootProject.yarn_mappings}:v2"
+    }
+}
+
+allprojects {
+    apply plugin: "java"
+    apply plugin: "architectury-plugin"
+    apply plugin: "maven-publish"
+
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+
+    archivesBaseName = rootProject.archives_base_name
+    version = rootProject.minecraft_version + "-" + rootProject.mod_version
+    group = rootProject.maven_group
+
+    repositories {
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = "UTF-8"
+        options.release = 17
+    }
+
+    java {
+        withSourcesJar()
+    }
+    build.finalizedBy copyJars
+}
+
