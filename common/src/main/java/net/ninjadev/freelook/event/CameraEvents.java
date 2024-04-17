@@ -43,7 +43,7 @@ public class CameraEvents {
 
         if (ModKeybinds.keyFreeLook.isPressed() || isToggled) {
             if (state == State.INACTIVE) {
-                reset(camera);
+                reset();
                 setup();
                 state = State.ACTIVE;
                 return;
@@ -63,7 +63,7 @@ public class CameraEvents {
                     startInterpolation();
                     state = State.INTERPOLATING;
                 } else {
-                    reset(camera);
+                    reset();
                 }
             }
         }
@@ -127,7 +127,7 @@ public class CameraEvents {
 
         lerpTimeElapsed = (System.currentTimeMillis() - lerpStart);
         if (lerpTimeElapsed >= duration) {
-            reset(camera);
+            reset();
         }
     }
 
@@ -135,8 +135,7 @@ public class CameraEvents {
         return a + (b - a) * t;
     }
 
-    private static void reset(Camera camera) {
-        //TODO ((CameraAccessor)camera).callSetRotation(yaw, pitch);
+    private static void reset() {
         lerpTimeElapsed = 0;
         yaw = 0;
         pitch = 0;
