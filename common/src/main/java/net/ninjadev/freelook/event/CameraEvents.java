@@ -28,60 +28,54 @@ public class CameraEvents {
 
     private static long lerpStart = 0;
     private static long lerpTimeElapsed = 0;
-    private static boolean initialPress = true;
-    public static boolean isInterpolating = false;
 
-    public static boolean toggle = false;
-
-    public static boolean isFreelooking = false;
+    private static State state = State.INACTIVE;
+    private static boolean isToggled = false;
 
     public static void onClientTick() {
         if (ModKeybinds.keyToggleMode.wasPressed()) {
-            toggle = !toggle;
+            isToggled = !isToggled;
         }
     }
 
     public static void onCameraUpdate(Camera camera) {
         if (getMinecraft().options.getPerspective().isFrontView()) return;
 
-        if (ModKeybinds.keyFreeLook.isPressed() || toggle) {
-            isFreelooking = true;
-            if (initialPress) {
+        if (ModKeybinds.keyFreeLook.isPressed() || isToggled) {
+            if (state == State.INACTIVE) {
                 reset(camera);
                 setup();
-                initialPress = false;
+                state = State.ACTIVE;
+                return;
             }
 
             lockPlayerRotation();
             updateMouseInput();
             updateCameraRotation(camera);
 
-        } else if (isInterpolating) {
+        } else if (state == State.INTERPOLATING) {
             lockPlayerRotation();
             interpolate(camera);
         } else {
-            if (!initialPress) {
+            if (state == State.ACTIVE) {
                 if (ModConfigs.FREELOOK.shouldInterpolate()) {
-                    ((CameraAccessor) camera).setYaw(yaw);
-                    ((CameraAccessor) camera).setPitch(pitch);
+                    ((CameraAccessor) camera).callSetRotation(yaw, pitch);
                     startInterpolation();
+                    state = State.INTERPOLATING;
                 } else {
                     reset(camera);
                 }
-                initialPress = true;
             }
-            isFreelooking = false;
         }
     }
 
     private static void startInterpolation() {
         lerpStart = System.currentTimeMillis();
-        isInterpolating = true;
     }
 
     private static void setup() {
-        originalYaw = getPlayer().getYaw();
-        originalPitch = getPlayer().getPitch();
+        originalYaw = yaw = prevYaw = getPlayer().getYaw();
+        originalPitch = pitch = prevPitch = getPlayer().getPitch();
         originalHeadYaw = getPlayer().getHeadYaw();
         prevMouseX = getMinecraft().mouse.getX();
         prevMouseY = getMinecraft().mouse.getY();
@@ -90,36 +84,44 @@ public class CameraEvents {
     private static void updateCameraRotation(Camera camera) {
         double dx = mouseDX * getSensitivity() * 0.15D;
         double dy = mouseDY * getSensitivity() * 0.15D;
-        yaw = (float) dx - prevYaw + originalYaw;
-        if (getMinecraft().options.getInvertYMouse().getValue()) {
-            pitch = (float) dy + prevPitch + originalPitch;
-        } else {
-            pitch = (float) dy - prevPitch + originalPitch;
-        }
+
+        yaw = prevYaw - (float) dx;
         if (ModConfigs.FREELOOK.shouldClamp()) {
-            yaw = MathHelper.clamp(yaw, (originalYaw + -100.0F), (originalYaw + 100.0F));
+            yaw = MathHelper.clamp(yaw, (originalYaw - 100.0F), (originalYaw + 100.0F));
+        }
+
+        if (getMinecraft().options.getInvertYMouse().getValue()) {
+            pitch = prevPitch + (float) dy;
+        } else {
+            pitch = prevPitch - (float) dy;
         }
         pitch = MathHelper.clamp(pitch, -90.0F, 90.0F);
 
-        prevYaw = ModConfigs.FREELOOK.shouldClamp() ? MathHelper.clamp((float) dx + prevYaw, -100.0F, 100.0F) : (float) (dx + prevYaw);
+        if (getMinecraft().options.getPerspective().isFrontView()) {
+            yaw -= 180;
+            pitch = -pitch;
+        }
 
-        prevPitch = MathHelper.clamp((float) dy + prevPitch, -90.0F, 90.0F);
+        ((CameraAccessor) camera).callSetRotation(yaw, pitch);
+        getPlayer().setHeadYaw(yaw);
+        getPlayer().setPitch(pitch);
 
-        ((CameraAccessor) camera).setYaw(yaw);
-        ((CameraAccessor) camera).setPitch(pitch);
+        prevYaw = yaw;
+        prevPitch = pitch;
     }
 
     private static void interpolate(Camera camera) {
         double duration = ModConfigs.FREELOOK.getInterpolateSpeed() * 1000f;
         float delta = (System.currentTimeMillis() - lerpStart) - lerpTimeElapsed;
-        delta /= duration;
+        delta /= (float) duration;
 
         float percentCompleted = (float) lerpTimeElapsed / (float) duration;
         float interpolatedYaw = lerp(yaw, originalYaw, percentCompleted * 10f * delta);
         float interpolatedPitch = lerp(pitch, originalPitch, percentCompleted * 10f * delta);
 
-        ((CameraAccessor) camera).setYaw(yaw);
-        ((CameraAccessor) camera).setPitch(pitch);
+        ((CameraAccessor) camera).callSetRotation(yaw, pitch);
+        getPlayer().setHeadYaw(yaw);
+        getPlayer().setPitch(pitch);
         yaw = interpolatedYaw;
         pitch = interpolatedPitch;
 
@@ -134,9 +136,7 @@ public class CameraEvents {
     }
 
     private static void reset(Camera camera) {
-        ((CameraAccessor) camera).setYaw(yaw);
-        ((CameraAccessor) camera).setPitch(pitch);
-        isInterpolating = false;
+        //TODO ((CameraAccessor)camera).callSetRotation(yaw, pitch);
         lerpTimeElapsed = 0;
         yaw = 0;
         pitch = 0;
@@ -148,12 +148,12 @@ public class CameraEvents {
         prevMouseY = 0;
         player = null;
         minecraft = null;
+        state = State.INACTIVE;
     }
 
     private static void lockPlayerRotation() {
         getPlayer().setYaw(originalYaw);
         getPlayer().setPitch(originalPitch);
-        getPlayer().headYaw = originalHeadYaw;
     }
 
     private static void updateMouseInput() {
@@ -179,6 +179,10 @@ public class CameraEvents {
     }
 
     public static boolean shouldUpdate() {
-        return ModKeybinds.keyFreeLook.isPressed() || CameraEvents.toggle || CameraEvents.isFreelooking || CameraEvents.isInterpolating;
+        return ModKeybinds.keyFreeLook.isPressed() || CameraEvents.isToggled || state != State.INACTIVE;
+    }
+
+    public enum State {
+        INACTIVE, ACTIVE, INTERPOLATING
     }
 }
