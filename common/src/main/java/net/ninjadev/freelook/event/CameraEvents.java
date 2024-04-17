@@ -3,6 +3,7 @@ package net.ninjadev.freelook.event;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.Camera;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 import net.ninjadev.freelook.init.ModConfigs;
 import net.ninjadev.freelook.init.ModKeybinds;
@@ -34,6 +35,7 @@ public class CameraEvents {
     public static void onClientTick() {
         if (ModKeybinds.keyToggleMode.wasPressed()) {
             isToggled = !isToggled;
+            getPlayer().sendMessage(Text.literal("FreeLook Toggle: " + isToggled), true);
         }
     }
 
