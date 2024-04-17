@@ -1,10 +1,10 @@
 modLoader="javafml" #mandatory
-loaderVersion="[49,)" #mandatory
+loaderVersion="[45,)" #mandatory
 license="MIT"
 
 [[mods]] #mandatory
 modId="freelook" #mandatory
-version="1.20.4" #mandatory
+version="${version}" #mandatory
 displayName="FreeLook" #mandatory
 description='''FPS Style FreeLook!''' #mandatory
 authors="jmilthedude" #optional
@@ -13,13 +13,13 @@ authors="jmilthedude" #optional
 [[dependencies.freelook]]
     modId="forge"
     mandatory=true
-    versionRange="[49,)"
+    versionRange="[45,)"
     ordering="NONE"
     side="BOTH"
 
 [[dependencies.freelook]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.20.4]"
+    versionRange="[1.19,)"
     ordering="NONE"
     side="BOTH"
