@@ -19,7 +19,6 @@ public class CameraEvents {
     private static float prevPitch;
     private static float originalYaw;
     private static float originalPitch;
-    private static float originalHeadYaw;
 
     private static double mouseDX;
     private static double mouseDY;
@@ -76,7 +75,6 @@ public class CameraEvents {
     private static void setup() {
         originalYaw = yaw = prevYaw = getPlayer().getYaw();
         originalPitch = pitch = prevPitch = getPlayer().getPitch();
-        originalHeadYaw = getPlayer().getHeadYaw();
         prevMouseX = getMinecraft().mouse.getX();
         prevMouseY = getMinecraft().mouse.getY();
     }
