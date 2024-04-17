@@ -4,7 +4,7 @@ license="MIT"
 
 [[mods]] #mandatory
 modId="freelook" #mandatory
-version="1.20.4" #mandatory
+version="${version}" #mandatory
 displayName="FreeLook" #mandatory
 description='''FPS Style FreeLook!''' #mandatory
 authors="jmilthedude" #optional
@@ -20,6 +20,6 @@ authors="jmilthedude" #optional
 [[dependencies.freelook]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.20.4]"
+    versionRange="[1.20,)"
     ordering="NONE"
     side="BOTH"
