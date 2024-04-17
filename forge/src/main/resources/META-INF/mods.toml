@@ -1,5 +1,5 @@
 modLoader="javafml" #mandatory
-loaderVersion="[45,)" #mandatory
+loaderVersion="[41,)" #mandatory
 license="MIT"
 
 [[mods]] #mandatory
@@ -13,7 +13,7 @@ authors="jmilthedude" #optional
 [[dependencies.freelook]]
     modId="forge"
     mandatory=true
-    versionRange="[45,)"
+    versionRange="[41,)"
     ordering="NONE"
     side="BOTH"
 
