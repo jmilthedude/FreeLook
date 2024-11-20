@@ -9,7 +9,6 @@
     "MinecraftMixin",
     "OptionsMixin"
   ],
-  "refmap": "FreeLook-common-refmap.json",
   "mixins": [
   ],
   "injectors": {
